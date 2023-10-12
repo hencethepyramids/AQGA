@@ -21,19 +21,25 @@ nlp = spacy.load("en_core_web_sm")
 tfidf_vectorizer = TfidfVectorizer()
 explanation_vectors = tfidf_vectorizer.fit_transform(explanations)
 
-# Process the user's input
-user_input = "What is a variable in coding?"
-user_input = nlp(user_input)
+while True:
+    # Get user input
+    user_input = input("Ask a question (type 'exit' to quit): ")
 
-# Vectorize the user's input
-user_input_vector = tfidf_vectorizer.transform([user_input.text])
+    if user_input.lower() == 'exit':
+        print("Goodbye!")
+        break
 
-# Calculate cosine similarity
-similarities = cosine_similarity(user_input_vector, explanation_vectors)
+    # Process the user's input
+    user_input = nlp(user_input)
 
-# Find the most similar explanation
-most_similar_idx = similarities.argmax()
+    # Vectorize the user's input
+    user_input_vector = tfidf_vectorizer.transform([user_input.text])
 
-# Display the explanation
-print("User's Question:", user_input.text)
-print("Explanation:", explanations[most_similar_idx])
+    # Calculate cosine similarity
+    similarities = cosine_similarity(user_input_vector, explanation_vectors)
+
+    # Find the most similar explanation
+    most_similar_idx = similarities.argmax()
+
+    # Display the explanation
+    print("Answer:", explanations[most_similar_idx])
