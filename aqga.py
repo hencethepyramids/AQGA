@@ -1,45 +1,23 @@
-import spacy
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import openai
 
-# Sample questions and explanations
-questions = [
-    "What is a variable in programming?",
-    "How do you define a function in Python?",
-    "Explain the concept of a for loop.",
-]
-explanations = [
-    "A variable is a container for storing data in a program.",
-    "In Python, you can define a function using the 'def' keyword.",
-    "A for loop is used to iterate over a sequence of items."
-]
+# Replace 'YOUR_API_KEY' with your actual OpenAI API key
+api_key = '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'
 
-# Initialize spaCy
-nlp = spacy.load("en_core_web_sm")
-
-# Vectorize the explanations
-tfidf_vectorizer = TfidfVectorizer()
-explanation_vectors = tfidf_vectorizer.fit_transform(explanations)
+# Define a function to ask questions
+def ask_question(question):
+    openai.api_key = api_key
+    response = openai.Completion.create(
+        engine="text-davinci-002",
+        prompt=question,
+        max_tokens=150,
+    )
+    return response.choices[0].text
 
 while True:
-    # Get user input
     user_input = input("Ask a question (type 'exit' to quit): ")
-
     if user_input.lower() == 'exit':
         print("Goodbye!")
         break
 
-    # Process the user's input
-    user_input = nlp(user_input)
-
-    # Vectorize the user's input
-    user_input_vector = tfidf_vectorizer.transform([user_input.text])
-
-    # Calculate cosine similarity
-    similarities = cosine_similarity(user_input_vector, explanation_vectors)
-
-    # Find the most similar explanation
-    most_similar_idx = similarities.argmax()
-
-    # Display the explanation
-    print("Answer:", explanations[most_similar_idx])
+    answer = ask_question(user_input)
+    print("Answer:", answer)
